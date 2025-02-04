@@ -1,13 +1,24 @@
 from typing import Union
 
 from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi.params import Query
+from pydantic import BaseModel, Field
+from typing_extensions import Annotated
 
-app = FastAPI()
+app = FastAPI(
+    title="Totem de Vendas",
+)
 
 class Item(BaseModel):
-    name: str
-    description: str
+    name: str | None = Field(
+        min_length=3,
+        max_length=50,
+        title="Nome do item",
+        description="Nome do item que será vendido",
+        example="Exemplo de conteúdo",
+    )
+    description: str | None = None
+
 
 @app.get("/")
 def read_root():
@@ -27,3 +38,10 @@ def read_item():
 def read_item(item_id: int, page: int, item: Item, filter: str | None = None):
     return {"QUALQUER COISA": item_id, "FILTER": filter}
 
+@app.post("/items/post", status_code=201)
+def postItem():
+    return "Parabéns post enviado"
+
+# @app.get("lista/{item_id}")
+# def get_item(item_id: int, Annotated[str, Query(ge=3, le=50)] name: str):
+#     return {"item_id": item_id, "name": name}
